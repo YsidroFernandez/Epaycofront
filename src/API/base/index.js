@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 // const apiUrl = 'http://10.0.2.2:3005/api/';  //ANDROID EMULATE
-const apiUrl = 'http://192.168.1.106:4000/api/';  //device
+const apiUrl = 'http://127.0.0.1:4000/api/';  //device
 
 class Request {
     constructor(url, baseUrl) {
