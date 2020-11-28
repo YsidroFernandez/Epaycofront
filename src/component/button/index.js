@@ -12,14 +12,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ButtonComponent(props) {
 
-  const { color , action} = props; 
+  const { color , action,title} = props; 
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       
       <Button variant="contained" color={color} onClick={action}>
-        Primary
+        {title}
       </Button>
     </div>
   );

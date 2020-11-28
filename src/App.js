@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import LoginView from './views/login/login.view';
 import HomeView from './views/home/home.view';
-
+import RegisterView from './views/register/register.view';
 
 function App() {
   return (
@@ -17,6 +17,11 @@ function App() {
           exact
           path="/home"
           component={HomeView}
+        />
+        <Route
+          exact
+          path="/register"
+          component={RegisterView}
         />
         <Route
           path="/"
