@@ -14,9 +14,8 @@ const useStyles = makeStyles((theme) => ({
     flexWrap: 'wrap',
     '& > *': {
       marginLeft: theme.spacing(50),
-      marginTop: theme.spacing(10),
       width: '50%',
-      height: theme.spacing(90),
+      height: '100%',
     },
   },
   form: {
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
     '& > *': {
       margin: '17%',
       width: '60%',
-      height: '60%',
+      height: '70%',
       borderRadius: 10,
     },
   },
@@ -56,6 +55,10 @@ export default function RegisterView(props) {
   const [document, setDocument] = useState('');
   const [name, setName] = useState('');
   const [last_name, setLastName] = useState('');
+  const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
+  const [severity, setSeverity] = useState('');
+
 
   function handleRegister() {
 
@@ -69,27 +72,26 @@ export default function RegisterView(props) {
       phone : phone
     };
 
-    login.post(value)
+    singup.post(value)
       .then(resp => {
         console.log(resp);
         if (resp.data.status === 200) {
-          console.log('Logued')
-
-          localStorage.setItem('id', resp.data.user._id);
-          localStorage.setItem('tkn', resp.data.token);
-          localStorage.setItem('email', resp.data.user.email);
+          
           setOpen(true);
           setMessage(resp.data.message);
           setSeverity("success");
-          history.push('/home');
+          history.push('/');
+
         } else {
+
           setOpen(true);
           setMessage(resp.data.message);
           setSeverity("error");
+
         }
 
       })
-      .catch(function (error) {
+      .catch(function (error){
 
         setOpen(true);
         setMessage("Error al procesar la solicitud");
@@ -115,6 +117,40 @@ export default function RegisterView(props) {
     history.push('');
   }
 
+  const handleClose = (event, reason) => {
+    setOpen(false);
+  };
+
+  const handleChangeEmail = (event) => {
+    setEmail(event.target.value);
+    setOpen(false);
+  };
+
+  const handleChangePassword = (event) => {
+    setPassword(event.target.value);
+    setOpen(false);
+  };
+
+
+  const handleChangeDocument = (event) => {
+    setDocument(event.target.value);
+    setOpen(false);
+  };
+
+  const handleChangePhone = (event) => {
+    setPhone(event.target.value);
+    setOpen(false);
+  };
+
+  const handleChangeName = (event) => {
+    setName(event.target.value);
+    setOpen(false);
+  };
+
+  const handleChangeLastName = (event) => {
+    setLastName(event.target.value);
+    setOpen(false);
+  };
 
   return (
     <div className={classes.root}>
@@ -123,31 +159,51 @@ export default function RegisterView(props) {
         <Paper className={classes.paper}>
 
           <form className={classes.form} noValidate autoComplete="off">
-            <div >
+          <div >
               <TextField
-                id="standard-basic"
-                label="Standard"
+                id="name"
+                label="Nombre"
+                onChange={handleChangeName}
                 className={classes.textField}
               />
             </div>
             <div >
               <TextField
-                id="standard-basic"
-                label="Standard"
+                id="last_name"
+                label="Apellido"
+                onChange={handleChangeLastName}
                 className={classes.textField}
               />
             </div>
             <div >
               <TextField
-                id="standard-basic"
-                label="Standard"
+                id="email"
+                label="Email"
+                onChange={handleChangeEmail}
                 className={classes.textField}
               />
             </div>
             <div >
               <TextField
-                id="standard-basic"
-                label="Standard"
+                id="password"
+                label="Password"
+                onChange={handleChangePassword}
+                className={classes.textField}
+              />
+            </div>
+            <div >
+              <TextField
+                id="document"
+                label="Documento"
+                onChange={handleChangeDocument}
+                className={classes.textField}
+              />
+            </div>
+            <div >
+              <TextField
+                id="telefono"
+                label="Teléfono"
+                onChange={handleChangePhone}
                 className={classes.textField}
               />
             </div>

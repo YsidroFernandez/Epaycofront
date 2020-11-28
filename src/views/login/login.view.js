@@ -69,6 +69,8 @@ export default function LoginView(props) {
           localStorage.setItem('id', resp.data.user._id);
           localStorage.setItem('tkn', resp.data.token);
           localStorage.setItem('email', resp.data.user.email);
+          localStorage.setItem('name', resp.data.user.name);
+          localStorage.setItem('last_name', resp.data.user.last_name);
           setOpen(true);
           setMessage(resp.data.message);
           setSeverity("success");

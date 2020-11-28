@@ -12,6 +12,8 @@ import user from '../../API/user';
 import ModalPay from '../../component/modal_pay';
 import registerPurchase from '../../API/register_purchase';
 import ButtonComponent from '../../component/button'
+import CustomizedSnackbars from '../../component/toast'
+import RechargeBalanceComponent from '../../component/check_balance';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -50,7 +52,7 @@ const root = {
         display: 'flex',
         flexWrap: 'wrap',
         width: '100%',
-        height: '150px',
+        height: '550px',
     };
 
 
@@ -67,12 +69,17 @@ class ScrollableHome extends Component {
             confirm : false,
             message:'',
             token:'',
-            session:''
+            session:'',
+            open_toast : false,
+            severity: '',
+            message_toast:''
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.handleLogout = this.handleLogout.bind(this);
     }
+
+
 
     componentDidMount(){
         console.log('Mounted');
@@ -90,7 +97,8 @@ class ScrollableHome extends Component {
                     this.setState(
                         {
                             name : resp.data.user.name,
-                            last_name : resp.data.user.last_name
+                            last_name : resp.data.user.last_name,
+                            message_toast : resp.data.message
                         }
                     )
                 }
@@ -118,6 +126,11 @@ class ScrollableHome extends Component {
     handleChange = (event, newValue) => {
 
         this.setState({ value: newValue })
+    };
+
+    handleClose = () => {
+
+        this.setState({ open_toast: false })
     };
 
     handelModalPay = () => {
@@ -163,6 +176,15 @@ class ScrollableHome extends Component {
                             message : resp.data.message
                         }
                     )
+                }else{
+                    this.setState(
+                        { 
+                            open_toast : true ,
+                            severity : 'error',
+                            message_toast : resp.data.message
+
+                        }
+                    )
                 }
                 
             })
@@ -195,8 +217,11 @@ class ScrollableHome extends Component {
         this.props.history.push('/');
     };
 
+
+
+
     render() {
-        const { value, name, last_name, open, amount,confirm,message ,token,session} = this.state
+        const { value, name, last_name, open, amount,confirm,message ,token,session, open_toast, severity,message_toast} = this.state
 
         return (
             <div >
@@ -241,7 +266,10 @@ class ScrollableHome extends Component {
                             confirm_pay={this.handleConfirmPay}
                             title_confirm="Confirmar"
                         />
+                        <CustomizedSnackbars open={open_toast} severity={severity} close={this.handleClose} message={message_toast} />
 
+                        <RechargeBalanceComponent/>
+                        
                     </Paper>
                 </TabPanel>
                 <TabPanel value={value} index={1}>

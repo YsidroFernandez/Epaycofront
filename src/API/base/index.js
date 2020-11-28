@@ -22,9 +22,9 @@ class Request {
 
     getOne(id, contentType = 'application/json' , token = null){
        
-        if(token != null){
-            this.request.defaults.headers.common['Authorization'] = token;
-        }
+       
+        this.request.defaults.headers.common['Authorization'] = token;
+        
         this.request.defaults.headers.post['Content-Type'] = contentType;
         return this.request({ url : this.url + '/' + id });
     }
