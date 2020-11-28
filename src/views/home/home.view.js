@@ -10,14 +10,19 @@ import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
-import user from '../../API/user';
+
 import ModalPay from '../../component/modal_pay';
-import registerPurchase from '../../API/register_purchase';
 import ButtonComponent from '../../component/button'
 import CustomizedSnackbars from '../../component/toast'
-import RechargeBalanceComponent from '../../component/check_balance';
+import RechargeBalanceComponent from '../../component/recharge_balance';
+import CheckBalanceComponent from '../../component/check_balance'
+import LoadingBackdropComponent from '../../component/loading';
+
+import user from '../../API/user';
+import registerPurchase from '../../API/register_purchase';
 import recharge from '../../API/recharge_balance';
 import confirmPurchase from '../../API/confirm_purchase';
+import chechBlance from '../../API/check_balance';
 
 
 function TabPanel(props) {
@@ -81,7 +86,10 @@ class ScrollableHome extends Component {
             document: '',
             phone: '',
             balance: 0,
-            balance_purchase:0
+            balance_purchase:0,
+            email:'',
+            phone_check:'',
+            openLoading:false
 
 
         }
@@ -89,57 +97,42 @@ class ScrollableHome extends Component {
     }
 
 
-
-    componentDidMount() {
-        console.log('Mounted');
-
-        console.log('cargando');
-        let tkn = localStorage.getItem('tkn');
-        let id = localStorage.getItem('id');
-
-        console.log(id)
-
-        user.getOne(id, null, tkn)
-            .then(resp => {
-                console.log(resp);
-                if (resp.data.status === 200) {
-                    this.setState(
-                        {
-                            name: resp.data.user.name,
-                            last_name: resp.data.user.last_name,
-                            message_toast: resp.data.message
-                        }
-                    )
-                }
-
-            })
-            .catch(function (error) {
-
-                if (error.response) {
-
-                    console.log(error.response.data);
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                } else if (error.request) {
-
-                    console.log(error.request);
-                } else {
-
-                    console.log('Error', error.message);
-                }
-                console.log(error.config);
-            });
-
-    }
+    /********************** CHANGE STATE TO PROPS ****************************** */
+   
 
     handleChange = (event, newValue) => {
 
         this.setState({ value: newValue })
+
+        if(newValue===1){
+           localStorage.clear();
+           this.props.history.push('/')
+        }
     };
 
     handleClose = () => {
 
-        this.setState({ open_toast: false })
+        this.setState({ 
+            value: 0,
+            name: '',
+            last_name: '',
+            open: false,
+            amount: 0,
+            confirm: false,
+            message: '',
+            token: '',
+            session: '',
+            open_toast: false,
+            severity: 'success',
+            message_toast: '',
+            document: '',
+            phone: '',
+            balance: 0,
+            balance_purchase:0,
+            email:'',
+            phone_check:''
+        
+        })
     };
 
     handelModalPay = () => {
@@ -176,9 +169,69 @@ class ScrollableHome extends Component {
         this.setState({ balance: event.target.value });
     };
 
+    handleChangeEmail = (event) => {
+        this.setState({ email: event.target.value });
+    };
+
+    handleChangePhoneBalance = (event) => {
+        this.setState({ phone_check: event.target.value });
+    };
+
+    handleLogout = () => {
+        localStorage.clear();
+        this.props.history.push('/');
+    };
+
+
+    /*********************SERVICES APIREST****************************** */
+
+    componentDidMount() {
+        
+        this.setState({ openLoading : true});
+        console.log('cargando');
+        let tkn = localStorage.getItem('tkn');
+        let id = localStorage.getItem('id');
+
+        console.log(id)
+
+        user.getOne(id, null, tkn)
+            .then(resp => {
+                console.log(resp);
+                if (resp.data.status === 200) {
+                    this.setState(
+                        {
+                            openLoading: false,
+                            name: resp.data.user.name,
+                            last_name: resp.data.user.last_name,
+                            message_toast: resp.data.message
+                        }
+                    )
+                }else{
+                    this.setState({ openLoading : false});
+                }
+
+            })
+            .catch(function (error) {
+
+                if (error.response) {
+
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+
+                    console.log(error.request);
+                } else {
+
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            });
+
+    }
 
     handleSavePurchase = () => {
-
+        this.setState({ openLoading : true});
         let data = {
             id_user: localStorage.getItem('id'),
             email: localStorage.getItem('email'),
@@ -193,6 +246,7 @@ class ScrollableHome extends Component {
                 if (resp.data.status === 200) {
                     this.setState(
                         {
+                            openLoading: false,
                             confirm: true,
                             message: resp.data.message,
                             balance_purchase : this.state.amount
@@ -201,6 +255,7 @@ class ScrollableHome extends Component {
                 } else {
                     this.setState(
                         {
+                            openLoading:false,
                             open_toast: true,
                             severity: 'error',
                             message_toast: resp.data.message
@@ -231,6 +286,8 @@ class ScrollableHome extends Component {
 
     handleConfirmPay = () => {
 
+        this.setState({ openLoading : true});
+
         let body = {    
             session : this.state.session,
             token : this.state.token,
@@ -238,14 +295,15 @@ class ScrollableHome extends Component {
             amount : this.state.balance_purchase
         };
 
-        console.log(body);
+        let tkn = localStorage.getItem('tkn');
 
-        confirmPurchase.post(body)
+        confirmPurchase.post(body,null,tkn)
             .then(resp => {
                 console.log(resp);
                 if (resp.data.status === 200) {
                     this.setState(
                         {
+                            openLoading: false,
                             open_toast:true,
                             open: false,
                             severity:"success",
@@ -261,6 +319,7 @@ class ScrollableHome extends Component {
 
                     this.setState(
                         {
+                            openLoading:false,
                             open_toast:true,
                             severity:"error",
                             message_toast: resp.data.message
@@ -292,19 +351,22 @@ class ScrollableHome extends Component {
 
     handleRecharge =()=>{
 
+        this.setState({ openLoading : true});
         let body = {    
             document : this.state.document,
             phone : this.state.phone,
             balance : this.state.balance
         };
 
+        let tkn = localStorage.getItem('tkn');
 
-        recharge.post(body)
+        recharge.post(body,null,tkn)
             .then(resp => {
                 console.log(resp);
                 if (resp.data.status === 200) {
                     this.setState(
                         {
+                            openLoading: false,
                             open_toast:true,
                             severity:"success",
                             message_toast: resp.data.message,
@@ -317,6 +379,7 @@ class ScrollableHome extends Component {
 
                     this.setState(
                         {
+                            openLoading: false,
                             open_toast:true,
                             severity:"error",
                             message_toast: resp.data.message
@@ -327,14 +390,6 @@ class ScrollableHome extends Component {
 
             })
             .catch(function (error) {
-
-                this.setState(
-                    {
-                        open_toast:true,
-                        severity:"error",
-                        message_toast: error.message
-                    }
-                )
 
                 if (error.response) {
 
@@ -355,10 +410,67 @@ class ScrollableHome extends Component {
     };
 
 
-    handleLogout = () => {
-        localStorage.clear();
-        this.props.history.push('/');
+    handleCheckBalance =()=>{
+        this.setState({ openLoading : true});
+        let body = {    
+            document : this.state.email,
+            phone : this.state.phone_check
+        };
+
+        let tkn = localStorage.getItem('tkn');
+
+        chechBlance.post(body,null,tkn)
+            .then(resp => {
+                console.log(resp);
+                if (resp.data.status === 200) {
+
+                    let data = resp.data.account[0];
+
+                    this.setState(
+                        {
+                            openLoading: false,
+                            open_toast:true,
+                            severity:"success",
+                            message_toast: 'Su saldo es: '+ data.balance,
+                            email:'',
+                            phone_check:''
+                        }
+                    )
+                }else{
+
+                    this.setState(
+                        {
+                            openLoading: false,
+                            open_toast:true,
+                            severity:"error",
+                            message_toast: resp.data.message
+                        }
+                    )
+
+                }
+
+            })
+            .catch(function (error) {
+
+                if (error.response) {
+
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+
+                    console.log(error.request);
+                } else {
+
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            });
+
+
     };
+
+    
 
 
    
@@ -366,7 +478,7 @@ class ScrollableHome extends Component {
 
     render() {
         const { value, name, last_name, open, amount, confirm, message, token, session, open_toast, severity, message_toast,
-            document, phone, balance, balance_purchase } = this.state
+            document, phone, balance, balance_purchase, email, phone_check, openLoading } = this.state
 
         return (
             <div >
@@ -426,23 +538,17 @@ class ScrollableHome extends Component {
                                         handleRecharge={this.handleRecharge}
                                     />
                                 </Grid>
-                                {/* <Grid item xs={4}>
-                                    <RechargeBalanceComponent
-                                        document={document}
-                                        handleChangeDocument={this.handleChangeDocument}
-                                        phone={phone}
-                                        handleChangePhone={this.handleChangePhone}
-                                        balance={balance}
-                                        handleChangeBalance={this.handleChangeBalance}
-                                        handleRecharge={this.handleRecharge}
+                                <Grid item xs={4}>
+                                    <CheckBalanceComponent
+                                        email={email}
+                                        handleChangeEmail={this.handleChangeEmail}
+                                        phone={phone_check}
+                                        handleChangePhoneBalance={this.handleChangePhoneBalance}
+                                        handleCheckBalance={this.handleCheckBalance}
                                     />
-                                </Grid> */}
+                                </Grid>
                             </React.Fragment>
                         </Grid>
-
-                        <CustomizedSnackbars open={open_toast} severity={severity} close={this.handleClose} message={message_toast} />
-
-
 
                     </Paper>
                 </TabPanel>
@@ -450,7 +556,9 @@ class ScrollableHome extends Component {
                     <ButtonComponent color="primary" title="Salir" action={this.handleLogout} />
 
                 </TabPanel>
+                <CustomizedSnackbars open={open_toast} severity={severity} close={this.handleClose} message={message_toast} />
 
+                <LoadingBackdropComponent openLoading={openLoading}  color="secondary"/>
             </div>
         );
     };

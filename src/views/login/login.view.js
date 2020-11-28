@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import Container from '@material-ui/core/Container';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import ButtonComponent from '../../component/button'
 import login from '../../API/login';
-import CustomizedSnackbars from '../../component/toast'
+import CustomizedSnackbars from '../../component/toast';
+import LoadingBackdropComponent from '../../component/loading';
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,9 +32,7 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: 10,
     },
   },
-  textFiel : {
-    
-  }
+
 
 }));
 
@@ -47,12 +46,14 @@ export default function LoginView(props) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState('');
+  const [openLoading, setOpenLoading] = useState(false);
+
 
   const classes = useStyles();
 
 
   function handleLogin() {
-
+    setOpenLoading(true);
     console.log(email + ' : ' + password);
     let value = {
       email: email,
@@ -64,7 +65,7 @@ export default function LoginView(props) {
         console.log(resp);
         if (resp.data.status === 200) {
           console.log('Logued')
-
+          setOpenLoading(false);
           localStorage.setItem('id', resp.data.user._id);
           localStorage.setItem('tkn', resp.data.token);
           localStorage.setItem('email', resp.data.user.email);
@@ -75,6 +76,7 @@ export default function LoginView(props) {
           setSeverity("success");
           history.push('/home');
         } else {
+          setOpenLoading(false);
           setOpen(true);
           setMessage(resp.data.message);
           setSeverity("error");
@@ -154,7 +156,7 @@ export default function LoginView(props) {
             <CustomizedSnackbars open={open} severity={severity} close={handleClose} message={message} />
             <ButtonComponent color="secondary" title="Registarse" action={handleregister} />
           </div>
-
+          <LoadingBackdropComponent openLoading={openLoading}   color="secondary"/>
 
         </Paper>
       </div>

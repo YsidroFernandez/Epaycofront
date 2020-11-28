@@ -5,7 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import ButtonComponent from '../../component/button';
 import singup from '../../API/singup';
 import CustomizedSnackbars from '../../component/toast';
-
+import LoadingBackdropComponent from '../../component/loading';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,10 +58,11 @@ export default function RegisterView(props) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [severity, setSeverity] = useState('');
+  const [openLoading, setOpenLoading] = useState(false);
 
 
   function handleRegister() {
-
+    setOpenLoading(true);
     
     let value = {
       email: email,
@@ -76,14 +77,14 @@ export default function RegisterView(props) {
       .then(resp => {
         console.log(resp);
         if (resp.data.status === 200) {
-          
+          setOpenLoading(false);
           setOpen(true);
           setMessage(resp.data.message);
           setSeverity("success");
           history.push('/');
 
         } else {
-
+          setOpenLoading(false);
           setOpen(true);
           setMessage(resp.data.message);
           setSeverity("error");
@@ -92,7 +93,7 @@ export default function RegisterView(props) {
 
       })
       .catch(function (error){
-
+        setOpenLoading(false);
         setOpen(true);
         setMessage("Error al procesar la solicitud");
         setSeverity("error");
@@ -151,6 +152,7 @@ export default function RegisterView(props) {
     setLastName(event.target.value);
     setOpen(false);
   };
+
 
   return (
     <div className={classes.root}>
@@ -216,6 +218,7 @@ export default function RegisterView(props) {
           
         </Paper>
       </div>
+      <LoadingBackdropComponent openLoading={openLoading} color="secondary"/>
 
 
     </div>
