@@ -10,19 +10,18 @@ import CustomizedSnackbars from '../../component/toast';
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: '#c66073',
-    display: 'flex',
-    flexWrap: 'wrap',
-    '& > *': {
-      marginLeft: theme.spacing(50),
-      width: '50%',
-      height: '100%',
-    },
+    height: '100%',
+    width: '100%',
+    textAlign: 'center',
   },
   form: {
     '& > *': {
+      margin: theme.spacing(2),
+      width: '90%',
+    },
+    '& .MuiTextField-root': {
       margin: theme.spacing(1),
-      width: '25ch',
-      textAlign:'center'
+      width: '50ch',
     },
   },
   paper: {
@@ -32,12 +31,13 @@ const useStyles = makeStyles((theme) => ({
     '& > *': {
       margin: '17%',
       width: '60%',
-      height: '70%',
+      height: '50%',
       borderRadius: 10,
     },
   },
-  textField: {
-    width: '40ch',
+  label: {
+    textAlign: 'left',
+    marginLeft: theme.spacing(5),
   },
   button :{
     textAlign: 'center'
@@ -114,7 +114,7 @@ export default function RegisterView(props) {
   }
 
   function handleCancel(){
-    history.push('');
+    history.push('/');
   }
 
   const handleClose = (event, reason) => {
@@ -156,7 +156,7 @@ export default function RegisterView(props) {
     <div className={classes.root}>
       <div className={classes.paper}>
 
-        <Paper className={classes.paper}>
+        <Paper >
 
           <form className={classes.form} noValidate autoComplete="off">
           <div >
@@ -164,7 +164,7 @@ export default function RegisterView(props) {
                 id="name"
                 label="Nombre"
                 onChange={handleChangeName}
-                className={classes.textField}
+                
               />
             </div>
             <div >
@@ -172,7 +172,7 @@ export default function RegisterView(props) {
                 id="last_name"
                 label="Apellido"
                 onChange={handleChangeLastName}
-                className={classes.textField}
+                
               />
             </div>
             <div >
@@ -180,7 +180,7 @@ export default function RegisterView(props) {
                 id="email"
                 label="Email"
                 onChange={handleChangeEmail}
-                className={classes.textField}
+                
               />
             </div>
             <div >
@@ -188,7 +188,7 @@ export default function RegisterView(props) {
                 id="password"
                 label="Password"
                 onChange={handleChangePassword}
-                className={classes.textField}
+                
               />
             </div>
             <div >
@@ -196,7 +196,7 @@ export default function RegisterView(props) {
                 id="document"
                 label="Documento"
                 onChange={handleChangeDocument}
-                className={classes.textField}
+                
               />
             </div>
             <div >
@@ -204,10 +204,10 @@ export default function RegisterView(props) {
                 id="telefono"
                 label="Teléfono"
                 onChange={handleChangePhone}
-                className={classes.textField}
+                
               />
             </div>
-            <div  className={classes.textField}>
+            <div  >
               <ButtonComponent color="secondary" title="Registarse" action={handleRegister} />
               <ButtonComponent color="secondary" title="Cancelar" action={handleCancel} />
               <CustomizedSnackbars open={open} severity={severity} close={handleClose} message={message} />

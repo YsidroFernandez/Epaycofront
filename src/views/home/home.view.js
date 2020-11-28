@@ -8,12 +8,17 @@ import PersonPinIcon from '@material-ui/icons/PersonPin';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
+
 import user from '../../API/user';
 import ModalPay from '../../component/modal_pay';
 import registerPurchase from '../../API/register_purchase';
 import ButtonComponent from '../../component/button'
 import CustomizedSnackbars from '../../component/toast'
 import RechargeBalanceComponent from '../../component/check_balance';
+import recharge from '../../API/recharge_balance';
+import confirmPurchase from '../../API/confirm_purchase';
+
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -49,11 +54,11 @@ function a11yProps(index) {
 }
 
 const root = {
-        display: 'flex',
-        flexWrap: 'wrap',
-        width: '100%',
-        height: '550px',
-    };
+    display: 'flex',
+    flexWrap: 'wrap',
+    width: '100%',
+    height: '550px',
+};
 
 
 class ScrollableHome extends Component {
@@ -62,26 +67,30 @@ class ScrollableHome extends Component {
         super(props);
         this.state = {
             value: 0,
-            name : '',
-            last_name :'',
-            open:false,
-            amount:0,
-            confirm : false,
-            message:'',
-            token:'',
-            session:'',
-            open_toast : false,
+            name: '',
+            last_name: '',
+            open: false,
+            amount: 0,
+            confirm: false,
+            message: '',
+            token: '',
+            session: '',
+            open_toast: false,
             severity: '',
-            message_toast:''
+            message_toast: '',
+            document: '',
+            phone: '',
+            balance: 0,
+            balance_purchase:0
+
+
         }
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleLogout = this.handleLogout.bind(this);
     }
 
 
 
-    componentDidMount(){
+    componentDidMount() {
         console.log('Mounted');
 
         console.log('cargando');
@@ -90,33 +99,33 @@ class ScrollableHome extends Component {
 
         console.log(id)
 
-        user.getOne(id,null,tkn)
+        user.getOne(id, null, tkn)
             .then(resp => {
                 console.log(resp);
-                if(resp.data.status === 200){
+                if (resp.data.status === 200) {
                     this.setState(
                         {
-                            name : resp.data.user.name,
-                            last_name : resp.data.user.last_name,
-                            message_toast : resp.data.message
+                            name: resp.data.user.name,
+                            last_name: resp.data.user.last_name,
+                            message_toast: resp.data.message
                         }
                     )
                 }
-                
+
             })
             .catch(function (error) {
-        
+
                 if (error.response) {
-                
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
                 } else if (error.request) {
-                
-                console.log(error.request);
+
+                    console.log(error.request);
                 } else {
-                
-                console.log('Error', error.message);
+
+                    console.log('Error', error.message);
                 }
                 console.log(error.config);
             });
@@ -144,73 +153,204 @@ class ScrollableHome extends Component {
     };
 
     handleChangeAmount = (event) => {
-        this.setState({amount:event.target.value});
-      };
+        this.setState({ amount: event.target.value });
+    };
 
     handleChangeToken = (event) => {
-        this.setState({token:event.target.value});
+        this.setState({ token: event.target.value });
     };
 
     handleChangeSession = (event) => {
-        this.setState({session:event.target.value});
+        this.setState({ session: event.target.value });
+    };
+
+    handleChangeDocument = (event) => {
+        this.setState({ document: event.target.value });
+    };
+
+    handleChangePhone = (event) => {
+        this.setState({ phone: event.target.value });
+    };
+
+    handleChangeBalance = (event) => {
+        this.setState({ balance: event.target.value });
     };
 
 
     handleSavePurchase = () => {
 
-        let data={
-            id_user : localStorage.getItem('id'),
-            email : localStorage.getItem('email'),
-            amount : this.state.amount
+        let data = {
+            id_user: localStorage.getItem('id'),
+            email: localStorage.getItem('email'),
+            amount: this.state.amount
         };
 
         let token = localStorage.getItem('tkn');
 
-        registerPurchase.post(data,null,token)
+        registerPurchase.post(data, null, token)
             .then(resp => {
                 console.log(resp);
-                if(resp.data.status === 200){
+                if (resp.data.status === 200) {
                     this.setState(
-                        { 
-                            confirm : true ,
-                            message : resp.data.message
+                        {
+                            confirm: true,
+                            message: resp.data.message,
+                            balance_purchase : this.state.amount
                         }
                     )
-                }else{
+                } else {
                     this.setState(
-                        { 
-                            open_toast : true ,
-                            severity : 'error',
-                            message_toast : resp.data.message
+                        {
+                            open_toast: true,
+                            severity: 'error',
+                            message_toast: resp.data.message
 
                         }
                     )
                 }
-                
+
             })
             .catch(function (error) {
-        
+
                 if (error.response) {
-                
-                console.log(error.response.data);
-                console.log(error.response.status);
-                console.log(error.response.headers);
+
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
                 } else if (error.request) {
-                
-                console.log(error.request);
+
+                    console.log(error.request);
                 } else {
-                
-                console.log('Error', error.message);
+
+                    console.log('Error', error.message);
                 }
                 console.log(error.config);
             });
-        
+
     };
 
     handleConfirmPay = () => {
 
-        console.log('Confirm')
+        let body = {    
+            session : this.state.session,
+            token : this.state.token,
+            id_user : localStorage.getItem('id'),
+            amount : this.state.balance_purchase
+        };
+
+        console.log(body);
+
+        confirmPurchase.post(body)
+            .then(resp => {
+                console.log(resp);
+                if (resp.data.status === 200) {
+                    this.setState(
+                        {
+                            open_toast:true,
+                            severity:"success",
+                            message_toast: resp.data.message,
+                            session:'',
+                            balance_purchase:0,
+                            amount:0
+                        }
+                    )
+                }else{
+
+                    this.setState(
+                        {
+                            open_toast:true,
+                            severity:"error",
+                            message_toast: resp.data.message
+                        }
+                    )
+
+                }
+
+            })
+            .catch(function (error) {
+
+                if (error.response) {
+
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+
+                    console.log(error.request);
+                } else {
+
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            });
+
     };
+
+
+    handleRecharge =()=>{
+
+        let body = {    
+            document : this.state.document,
+            phone : this.state.phone,
+            balance : this.state.balance
+        };
+
+
+        recharge.post(body)
+            .then(resp => {
+                console.log(resp);
+                if (resp.data.status === 200) {
+                    this.setState(
+                        {
+                            open_toast:true,
+                            severity:"success",
+                            message_toast: resp.data.message,
+                            document:'',
+                            phone:'',
+                            balance:0
+                        }
+                    )
+                }else{
+
+                    this.setState(
+                        {
+                            open_toast:true,
+                            severity:"error",
+                            message_toast: resp.data.message
+                        }
+                    )
+
+                }
+
+            })
+            .catch(function (error) {
+
+                this.setState(
+                    {
+                        open_toast:true,
+                        severity:"error",
+                        message_toast: error.message
+                    }
+                )
+
+                if (error.response) {
+
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                } else if (error.request) {
+
+                    console.log(error.request);
+                } else {
+
+                    console.log('Error', error.message);
+                }
+                console.log(error.config);
+            });
+
+
+    };
+
 
     handleLogout = () => {
         localStorage.clear();
@@ -218,10 +358,12 @@ class ScrollableHome extends Component {
     };
 
 
+   
 
 
     render() {
-        const { value, name, last_name, open, amount,confirm,message ,token,session, open_toast, severity,message_toast} = this.state
+        const { value, name, last_name, open, amount, confirm, message, token, session, open_toast, severity, message_toast,
+            document, phone, balance, balance_purchase } = this.state
 
         return (
             <div >
@@ -245,36 +387,65 @@ class ScrollableHome extends Component {
                             Bienvenido Sr(a) : {name}{' '}{last_name}
                         </Typography>
 
-                        <ModalPay 
-                            title_modal="Realizar pago"
-                            open={open} 
-                            amount={amount}
-                            change_amount={this.handleChangeAmount}
-                            button_open="Realizar pago"
-                            title_button="Pagar"
-                            title_button_cancel="Cancelar"
-                            open_modal={this.handelModalPay}
-                            close={this.handleCloseModalPay}
-                            cancel={this.handleCloseModalPay}
-                            save={this.handleSavePurchase}
-                            confirm={confirm}
-                            message={message}
-                            token={token}
-                            session={session}
-                            change_token={this.handleChangeToken}
-                            change_session={this.handleChangeSession}
-                            confirm_pay={this.handleConfirmPay}
-                            title_confirm="Confirmar"
-                        />
+                        <Grid container item xs={12} spacing={3}>
+                            <React.Fragment>
+                                <Grid item xs={4} >
+                                    <ModalPay
+                                        title_modal="Realizar pago"
+                                        open={open}
+                                        amount={amount}
+                                        change_amount={this.handleChangeAmount}
+                                        button_open="Realizar pago"
+                                        title_button="Pagar"
+                                        title_button_cancel="Cancelar"
+                                        open_modal={this.handelModalPay}
+                                        close={this.handleCloseModalPay}
+                                        cancel={this.handleCloseModalPay}
+                                        save={this.handleSavePurchase}
+                                        confirm={confirm}
+                                        message={message}
+                                        token={token}
+                                        session={session}
+                                        change_token={this.handleChangeToken}
+                                        change_session={this.handleChangeSession}
+                                        confirm_pay={this.handleConfirmPay}
+                                        title_confirm="Confirmar"
+                                    />
+                                </Grid>
+                                <Grid item xs={4}>
+                                    <RechargeBalanceComponent
+                                        document={document}
+                                        handleChangeDocument={this.handleChangeDocument}
+                                        phone={phone}
+                                        handleChangePhone={this.handleChangePhone}
+                                        balance={balance}
+                                        handleChangeBalance={this.handleChangeBalance}
+                                        handleRecharge={this.handleRecharge}
+                                    />
+                                </Grid>
+                                {/* <Grid item xs={4}>
+                                    <RechargeBalanceComponent
+                                        document={document}
+                                        handleChangeDocument={this.handleChangeDocument}
+                                        phone={phone}
+                                        handleChangePhone={this.handleChangePhone}
+                                        balance={balance}
+                                        handleChangeBalance={this.handleChangeBalance}
+                                        handleRecharge={this.handleRecharge}
+                                    />
+                                </Grid> */}
+                            </React.Fragment>
+                        </Grid>
+
                         <CustomizedSnackbars open={open_toast} severity={severity} close={this.handleClose} message={message_toast} />
 
-                        <RechargeBalanceComponent/>
-                        
+
+
                     </Paper>
                 </TabPanel>
                 <TabPanel value={value} index={1}>
                     <ButtonComponent color="primary" title="Salir" action={this.handleLogout} />
-                            
+
                 </TabPanel>
 
             </div>

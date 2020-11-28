@@ -2,7 +2,7 @@ import axios from 'axios';
 
 
 // const apiUrl = 'http://10.0.2.2:3005/api/';  //ANDROID EMULATE
-const apiUrl = 'http://192.168.1.105:4000/api/';  //device
+const apiUrl = 'http://192.168.1.106:4000/api/';  //device
 
 class Request {
     constructor(url,baseUrl){
@@ -23,7 +23,9 @@ class Request {
     getOne(id, contentType = 'application/json' , token = null){
        
        
-        this.request.defaults.headers.common['Authorization'] = token;
+        if(token != null){
+            this.request.defaults.headers.common['Authorization'] =  `Bearer-${token}`;
+        }
         
         this.request.defaults.headers.post['Content-Type'] = contentType;
         return this.request({ url : this.url + '/' + id });
@@ -33,7 +35,7 @@ class Request {
 
         console.log(this.baseUrl + ' '+ this.url)
         if(token != null){
-            this.request.defaults.headers.common['Authorization'] = token;
+            this.request.defaults.headers.common['Authorization'] =  `Bearer-${token}`;
         }
         this.request.defaults.headers.post['Content-Type'] = contentType;
         return this.request({ method: 'POST', url : this.url, data : value });

@@ -31,10 +31,9 @@ const useStyles = makeStyles((theme) => ({
       borderRadius: 10,
     },
   },
-  label: {
-    textAlign: 'left',
-    marginLeft: theme.spacing(5),
-  },
+  textFiel : {
+    
+  }
 
 }));
 
