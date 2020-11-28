@@ -247,9 +247,12 @@ class ScrollableHome extends Component {
                     this.setState(
                         {
                             open_toast:true,
+                            open: false,
                             severity:"success",
                             message_toast: resp.data.message,
                             session:'',
+                            token:'',
+                            confirm:false,
                             balance_purchase:0,
                             amount:0
                         }
