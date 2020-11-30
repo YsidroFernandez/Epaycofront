@@ -7,7 +7,6 @@ import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 import PersonPinIcon from '@material-ui/icons/PersonPin';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
 
 
@@ -38,7 +37,7 @@ function TabPanel(props) {
         >
             {value === index && (
                 <Box p={3}>
-                    <Typography variant="h1">{children}</Typography>
+                    <Typography variant="h5">{children}</Typography>
                 </Box>
             )}
         </div>
@@ -58,12 +57,6 @@ function a11yProps(index) {
     };
 }
 
-const root = {
-    display: 'flex',
-    flexWrap: 'wrap',
-    width: '100%',
-    height: '550px',
-};
 
 
 class ScrollableHome extends Component {
@@ -86,10 +79,10 @@ class ScrollableHome extends Component {
             document: '',
             phone: '',
             balance: 0,
-            balance_purchase:0,
-            email:'',
-            phone_check:'',
-            openLoading:false
+            balance_purchase: 0,
+            email: '',
+            phone_check: '',
+            openLoading: false
 
 
         }
@@ -98,21 +91,21 @@ class ScrollableHome extends Component {
 
 
     /********************** CHANGE STATE TO PROPS ****************************** */
-   
+
 
     handleChange = (event, newValue) => {
 
         this.setState({ value: newValue })
 
-        if(newValue===1){
-           localStorage.clear();
-           this.props.history.push('/')
+        if (newValue === 1) {
+            localStorage.clear();
+            this.props.history.push('/')
         }
     };
 
     handleClose = () => {
 
-        this.setState({ 
+        this.setState({
             value: 0,
             name: '',
             last_name: '',
@@ -128,10 +121,10 @@ class ScrollableHome extends Component {
             document: '',
             phone: '',
             balance: 0,
-            balance_purchase:0,
-            email:'',
-            phone_check:''
-        
+            balance_purchase: 0,
+            email: '',
+            phone_check: ''
+
         })
     };
 
@@ -186,8 +179,8 @@ class ScrollableHome extends Component {
     /*********************SERVICES APIREST****************************** */
 
     componentDidMount() {
-        
-        this.setState({ openLoading : true});
+
+        this.setState({ openLoading: true });
         console.log('cargando');
         let tkn = localStorage.getItem('tkn');
         let id = localStorage.getItem('id');
@@ -206,8 +199,8 @@ class ScrollableHome extends Component {
                             message_toast: resp.data.message
                         }
                     )
-                }else{
-                    this.setState({ openLoading : false});
+                } else {
+                    this.setState({ openLoading: false });
                 }
 
             })
@@ -231,7 +224,7 @@ class ScrollableHome extends Component {
     }
 
     handleSavePurchase = () => {
-        this.setState({ openLoading : true});
+        this.setState({ openLoading: true });
         let data = {
             id_user: localStorage.getItem('id'),
             email: localStorage.getItem('email'),
@@ -249,13 +242,13 @@ class ScrollableHome extends Component {
                             openLoading: false,
                             confirm: true,
                             message: resp.data.message,
-                            balance_purchase : this.state.amount
+                            balance_purchase: this.state.amount
                         }
                     )
                 } else {
                     this.setState(
                         {
-                            openLoading:false,
+                            openLoading: false,
                             open_toast: true,
                             severity: 'error',
                             message_toast: resp.data.message
@@ -286,42 +279,42 @@ class ScrollableHome extends Component {
 
     handleConfirmPay = () => {
 
-        this.setState({ openLoading : true});
+        this.setState({ openLoading: true });
 
-        let body = {    
-            session : this.state.session,
-            token : this.state.token,
-            id_user : localStorage.getItem('id'),
-            amount : this.state.balance_purchase
+        let body = {
+            session: this.state.session,
+            token: this.state.token,
+            id_user: localStorage.getItem('id'),
+            amount: this.state.balance_purchase
         };
 
         let tkn = localStorage.getItem('tkn');
 
-        confirmPurchase.post(body,null,tkn)
+        confirmPurchase.post(body, null, tkn)
             .then(resp => {
                 console.log(resp);
                 if (resp.data.status === 200) {
                     this.setState(
                         {
                             openLoading: false,
-                            open_toast:true,
+                            open_toast: true,
                             open: false,
-                            severity:"success",
+                            severity: "success",
                             message_toast: resp.data.message,
-                            session:'',
-                            token:'',
-                            confirm:false,
-                            balance_purchase:0,
-                            amount:0
+                            session: '',
+                            token: '',
+                            confirm: false,
+                            balance_purchase: 0,
+                            amount: 0
                         }
                     )
-                }else{
+                } else {
 
                     this.setState(
                         {
-                            openLoading:false,
-                            open_toast:true,
-                            severity:"error",
+                            openLoading: false,
+                            open_toast: true,
+                            severity: "error",
                             message_toast: resp.data.message
                         }
                     )
@@ -349,39 +342,39 @@ class ScrollableHome extends Component {
     };
 
 
-    handleRecharge =()=>{
+    handleRecharge = () => {
 
-        this.setState({ openLoading : true});
-        let body = {    
-            document : this.state.document,
-            phone : this.state.phone,
-            balance : this.state.balance
+        this.setState({ openLoading: true });
+        let body = {
+            document: this.state.document,
+            phone: this.state.phone,
+            balance: this.state.balance
         };
 
         let tkn = localStorage.getItem('tkn');
 
-        recharge.post(body,null,tkn)
+        recharge.post(body, null, tkn)
             .then(resp => {
                 console.log(resp);
                 if (resp.data.status === 200) {
                     this.setState(
                         {
                             openLoading: false,
-                            open_toast:true,
-                            severity:"success",
+                            open_toast: true,
+                            severity: "success",
                             message_toast: resp.data.message,
-                            document:'',
-                            phone:'',
-                            balance:0
+                            document: '',
+                            phone: '',
+                            balance: 0
                         }
                     )
-                }else{
+                } else {
 
                     this.setState(
                         {
                             openLoading: false,
-                            open_toast:true,
-                            severity:"error",
+                            open_toast: true,
+                            severity: "error",
                             message_toast: resp.data.message
                         }
                     )
@@ -410,16 +403,16 @@ class ScrollableHome extends Component {
     };
 
 
-    handleCheckBalance =()=>{
-        this.setState({ openLoading : true});
-        let body = {    
-            document : this.state.email,
-            phone : this.state.phone_check
+    handleCheckBalance = () => {
+        this.setState({ openLoading: true });
+        let body = {
+            document: this.state.email,
+            phone: this.state.phone_check
         };
 
         let tkn = localStorage.getItem('tkn');
 
-        chechBlance.post(body,null,tkn)
+        chechBlance.post(body, null, tkn)
             .then(resp => {
                 console.log(resp);
                 if (resp.data.status === 200) {
@@ -429,20 +422,20 @@ class ScrollableHome extends Component {
                     this.setState(
                         {
                             openLoading: false,
-                            open_toast:true,
-                            severity:"success",
-                            message_toast: 'Su saldo es: '+ data.balance,
-                            email:'',
-                            phone_check:''
+                            open_toast: true,
+                            severity: "success",
+                            message_toast: 'Su saldo es: ' + data.balance,
+                            email: '',
+                            phone_check: ''
                         }
                     )
-                }else{
+                } else {
 
                     this.setState(
                         {
                             openLoading: false,
-                            open_toast:true,
-                            severity:"error",
+                            open_toast: true,
+                            severity: "error",
                             message_toast: resp.data.message
                         }
                     )
@@ -470,10 +463,10 @@ class ScrollableHome extends Component {
 
     };
 
-    
 
 
-   
+
+
 
 
     render() {
@@ -497,60 +490,59 @@ class ScrollableHome extends Component {
                     </Tabs>
                 </AppBar>
                 <TabPanel value={value} index={0}>
-                    <Paper style={root}>
-                        <Typography variant="h5" >
-                            Bienvenido Sr(a) : {name}{' '}{last_name}
-                        </Typography>
+                        
+                    Bienvenido Sr(a) : {name}{' '}{last_name}
+                      
+                  
 
-                        <Grid container item xs={12} spacing={3}>
-                            <React.Fragment>
-                                <Grid item xs={4} >
-                                    <ModalPay
-                                        title_modal="Realizar pago"
-                                        open={open}
-                                        amount={amount}
-                                        change_amount={this.handleChangeAmount}
-                                        button_open="Realizar pago"
-                                        title_button="Pagar"
-                                        title_button_cancel="Cancelar"
-                                        open_modal={this.handelModalPay}
-                                        close={this.handleCloseModalPay}
-                                        cancel={this.handleCloseModalPay}
-                                        save={this.handleSavePurchase}
-                                        confirm={confirm}
-                                        message={message}
-                                        token={token}
-                                        session={session}
-                                        change_token={this.handleChangeToken}
-                                        change_session={this.handleChangeSession}
-                                        confirm_pay={this.handleConfirmPay}
-                                        title_confirm="Confirmar"
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <RechargeBalanceComponent
-                                        document={document}
-                                        handleChangeDocument={this.handleChangeDocument}
-                                        phone={phone}
-                                        handleChangePhone={this.handleChangePhone}
-                                        balance={balance}
-                                        handleChangeBalance={this.handleChangeBalance}
-                                        handleRecharge={this.handleRecharge}
-                                    />
-                                </Grid>
-                                <Grid item xs={4}>
-                                    <CheckBalanceComponent
-                                        email={email}
-                                        handleChangeEmail={this.handleChangeEmail}
-                                        phone={phone_check}
-                                        handleChangePhoneBalance={this.handleChangePhoneBalance}
-                                        handleCheckBalance={this.handleCheckBalance}
-                                    />
-                                </Grid>
-                            </React.Fragment>
-                        </Grid>
+                    {/* <React.Fragment> */}
+                    <Grid item xs={12} >
+                        <ModalPay
+                            title_modal="Realizar pago"
+                            open={open}
+                            amount={amount}
+                            change_amount={this.handleChangeAmount}
+                            button_open="Realizar pago"
+                            title_button="Pagar"
+                            title_button_cancel="Cancelar"
+                            open_modal={this.handelModalPay}
+                            close={this.handleCloseModalPay}
+                            cancel={this.handleCloseModalPay}
+                            save={this.handleSavePurchase}
+                            confirm={confirm}
+                            message={message}
+                            token={token}
+                            session={session}
+                            change_token={this.handleChangeToken}
+                            change_session={this.handleChangeSession}
+                            confirm_pay={this.handleConfirmPay}
+                            title_confirm="Confirmar"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <RechargeBalanceComponent
+                            document={document}
+                            handleChangeDocument={this.handleChangeDocument}
+                            phone={phone}
+                            handleChangePhone={this.handleChangePhone}
+                            balance={balance}
+                            handleChangeBalance={this.handleChangeBalance}
+                            handleRecharge={this.handleRecharge}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <CheckBalanceComponent
+                            email={email}
+                            handleChangeEmail={this.handleChangeEmail}
+                            phone={phone_check}
+                            handleChangePhoneBalance={this.handleChangePhoneBalance}
+                            handleCheckBalance={this.handleCheckBalance}
+                        />
+                    </Grid>
+                    {/* </React.Fragment> */}
 
-                    </Paper>
+
+
                 </TabPanel>
                 <TabPanel value={value} index={1}>
                     <ButtonComponent color="primary" title="Salir" action={this.handleLogout} />
@@ -558,7 +550,7 @@ class ScrollableHome extends Component {
                 </TabPanel>
                 <CustomizedSnackbars open={open_toast} severity={severity} close={this.handleClose} message={message_toast} />
 
-                <LoadingBackdropComponent openLoading={openLoading}  color="secondary"/>
+                <LoadingBackdropComponent openLoading={openLoading} color="secondary" />
             </div>
         );
     };
